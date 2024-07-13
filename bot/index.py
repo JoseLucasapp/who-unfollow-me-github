@@ -20,5 +20,6 @@ class App:
         followers = self.driver.find_elements(
             By.XPATH, '//*[@id="user-profile-frame"]/div/div/div[2]/a/span[2]')
 
-        for i in followers:
-            print(i.text)
+    def next_button(self):
+        next_btn = self.driver.find_element(
+            By.XPATH, '//*[@class="pagination"]/*[2]').text
