@@ -15,11 +15,23 @@ class App:
         self.tab_followers = '?tab=followers'
         self.tab_following = '?tab=following'
         self.driver.get(f'{base_url}{self.tab_followers}')
+        self.followers = []
 
     def get_followers(self):
         followers = self.driver.find_elements(
             By.XPATH, '//*[@id="user-profile-frame"]/div/div/div[2]/a/span[2]')
 
+        for i in followers:
+            self.followers.append(i.text)
+
+        self.next_button()
+
     def next_button(self):
         next_btn = self.driver.find_element(
-            By.XPATH, '//*[@class="pagination"]/*[2]').text
+            By.XPATH, '//*[@class="pagination"]/*[2]')
+
+        print(next_btn.tag_name, next_btn.get_attribute('class').split())
+        print(self.followers)
+
+        if next_btn.tag_name == 'a' and next_btn.get_attribute('rel') == 'nofollow':
+            next_btn.click()
