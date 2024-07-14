@@ -8,30 +8,46 @@ from bot.chrome_options import set_chrome_options
 
 class App:
     def __init__(self, base_url):
+        self.base_url = base_url
         service = Service(ChromeDriverManager().install())
         self.driver = webdriver.Chrome(
             service=service, options=set_chrome_options())
         self.action = webdriver.ActionChains(self.driver)
         self.tab_followers = '?tab=followers'
         self.tab_following = '?tab=following'
-        self.driver.get(f'{base_url}{self.tab_followers}')
         self.followers = []
+        self.followings = []
 
-    def get_followers(self):
-        followers = self.driver.find_elements(
+    def get_followers_and_followers(self, array):
+        follow = self.driver.find_elements(
             By.XPATH, '//*[@id="user-profile-frame"]/div/div/div[2]/a/span[2]')
 
-        for i in followers:
-            self.followers.append(i.text)
+        for i in follow:
+            array.append(i.text)
 
-        self.next_button()
+    def get_type(self, type):
+        if type == 'followers':
+            self.get_followers_and_followers(self.followers)
+        else:
+            self.get_followers_and_followers(self.followings)
 
-    def next_button(self):
-        next_btn = self.driver.find_element(
-            By.XPATH, '//*[@class="pagination"]/*[2]')
+    def next_button(self, type):
+        if type == 'followers':
+            self.driver.get(f'{self.base_url}{self.tab_followers}')
+        else:
+            self.driver.get(f'{self.base_url}{self.tab_following}')
 
-        print(next_btn.tag_name, next_btn.get_attribute('class').split())
-        print(self.followers)
+        while True:
+            try:
+                next_btn = self.driver.find_element(
+                    By.XPATH, '//*[@class="pagination"]/*[2]')
 
-        if next_btn.tag_name == 'a' and next_btn.get_attribute('rel') == 'nofollow':
-            next_btn.click()
+                if next_btn.tag_name == 'a' and next_btn.get_attribute('rel') == 'nofollow' and next_btn.text == 'Next':
+                    self.get_type(type)
+                    next_btn.click()
+                else:
+                    break
+            except:
+                continue
+
+        print(self.followers, self.followings)
