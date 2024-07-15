@@ -1,7 +1,7 @@
 # Who unfollow me github
 
 ## Overview
-The GitHub Follower Tracker Bot is a Python script that uses web scraping and multithreading to identify GitHub users you don't follow and users who don't follow you back. This bot helps you manage your GitHub follower relationships efficiently.
+This app is a Python script that uses web scraping and multithreading to identify GitHub users you don't follow and users who don't follow you back. This bot helps you manage your GitHub follower relationships efficiently.
 
 ## Features
  - Web Scraping: Fetches data from GitHub to track followers and following lists.
