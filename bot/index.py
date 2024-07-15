@@ -31,6 +31,17 @@ class App:
         else:
             self.get_followers_and_followers(self.followings)
 
+    def find(self):
+        print('You are not following:\n')
+        for follower in self.followers:
+            if not follower in self.followings:
+                print(follower)
+
+        print('Not follow you:\n')
+        for following in self.followings:
+            if following not in self.followers:
+                print(following)
+
     def next_button(self, type):
         if type == 'followers':
             self.driver.get(f'{self.base_url}{self.tab_followers}')
@@ -49,5 +60,3 @@ class App:
                     break
             except:
                 continue
-
-        print(self.followers, self.followings)

@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.options import Options
 
 def set_chrome_options() -> Options:
     chrome_options = Options()
-    # chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless")
     chrome_options.add_argument("start-maximized")
     # chrome_options.add_argument("--auto-open-devtools-for-tabs")
     chrome_options.add_argument("--no-sandbox")

@@ -6,3 +6,4 @@ if __name__ == '__main__':
     bot = App(base_url=base_url)
     bot.next_button('followers')
     bot.next_button('followings')
+    bot.find()
