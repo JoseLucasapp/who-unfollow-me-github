@@ -25,6 +25,13 @@ class App:
         self.tab_following = '?tab=following'
         self.followers = []
         self.followings = []
+        self.NAVY_BLUE = '\033[38;5;17m'
+        self.RED = '\033[31m'
+
+    def print_color(self, text, color):
+        RESET = '\033[0m'
+
+        print(f'{color}{text}{RESET}')
 
     def wait_for_page_load(self):
         wait = WebDriverWait(self.driver, 30)
@@ -47,20 +54,18 @@ class App:
 
     def find(self):
 
-        # se tá em following me segue
-
         not_following_you = [
             follower for follower in self.followings if follower not in self.followers]
         not_followed_by_you = [
             following for following in self.followers if following not in self.followings]
 
-        print('\nNot following you:\n')
+        print('\nNOT FOLLOWING YOU:\n')
         for follower in not_following_you:
-            print(follower)
+            self.print_color(follower, self.RED)
 
-        print('\nYou are not following:\n')
+        print('\nYOU ARE NOT FOLLOWING:\n')
         for following in not_followed_by_you:
-            print(following)
+            self.print_color(following, self.NAVY_BLUE)
 
     def running(self, stop_event):
         dots = '.'
