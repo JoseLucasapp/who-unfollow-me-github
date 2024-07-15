@@ -21,8 +21,7 @@ This app is a Python script that uses web scraping and multithreading to identif
 
   2. Install the required libraries:
   ```
-  pip install requirements
-
+  pip install -r requirements.txt
   ```
 
 ## Usage
