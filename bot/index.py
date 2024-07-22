@@ -4,6 +4,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import TimeoutException
+
 
 import threading
 import asyncio
@@ -25,13 +27,11 @@ class App:
         self.tab_following = '?tab=following'
         self.followers = []
         self.followings = []
-        self.NAVY_BLUE = '\033[38;5;17m'
-        self.RED = '\033[31m'
 
-    def print_color(self, text, color):
+    def print_color(self, text):
         RESET = '\033[0m'
 
-        print(f'{color}{text}{RESET}')
+        print(f'\033[31m {text}{RESET}')
 
     def wait_for_page_load(self):
         wait = WebDriverWait(self.driver, 30)
@@ -59,13 +59,19 @@ class App:
         not_followed_by_you = [
             following for following in self.followers if following not in self.followings]
 
-        print('\nNOT FOLLOWING YOU:\n')
-        for follower in not_following_you:
-            self.print_color(follower, self.RED)
+        if len(not_following_you) > 0:
+            print(f'\033[0m\nNOT FOLLOWING YOU:\n')
+            for follower in not_following_you:
+                self.print_color(follower)
+        else:
+            print(f'\033[92mGreat! Everyone is following you.')
 
-        print('\nYOU ARE NOT FOLLOWING:\n')
-        for following in not_followed_by_you:
-            self.print_color(following, self.NAVY_BLUE)
+        if len(not_followed_by_you) > 0:
+            print(f'\033[0m\nYOU ARE NOT FOLLOWING:\n')
+            for following in not_followed_by_you:
+                self.print_color(following)
+        else:
+            print(f'\033[92mAwesome! You are following everyone back.')
 
     def running(self, stop_event):
         dots = '.'
@@ -84,7 +90,6 @@ class App:
         System_settings.check_os()
 
     def next_button(self, type):
-
         stop_event = threading.Event()
 
         running_thread = threading.Thread(
@@ -99,19 +104,28 @@ class App:
 
             while True:
                 try:
+                    # Captura os seguidores na página atual
+                    self.get_type(type)
+
+                    # Verifica se há um botão de paginação
                     next_btn = WebDriverWait(self.driver, 10).until(
-                        EC.visibility_of_element_located(
-                            (By.XPATH, '//*[@class="pagination"]/*[2]'))
+                        EC.presence_of_element_located(
+                            (By.XPATH, '//*[@class="pagination"]/*[2]')
+                        )
                     )
 
-                    if next_btn.tag_name == 'a' and next_btn.get_attribute('rel') == 'nofollow' and next_btn.text == 'Next':
+                    if next_btn and next_btn.tag_name == 'a' and next_btn.get_attribute('rel') == 'nofollow' and next_btn.text == 'Next':
                         self.wait_for_page_load()
                         sleep(1)
-                        self.get_type(type)
                         next_btn.click()
                     else:
+                        print(f"No more pages to load for {type}.")
                         break
-                except:
+                except TimeoutException:
+                    print(f"No pagination button found for {type}.")
+                    break
+                except Exception as e:
+                    print(f"An error occurred: {str(e)}")
                     continue
         finally:
             stop_event.set()
